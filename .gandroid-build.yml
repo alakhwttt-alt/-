@@ -1,0 +1,41 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Web App
+      run: npm run build
+
+    - name: Build Bubblewrap PWA to APK
+      uses: marbled/pwabuilder-action@main
+      with:
+        web-manifest-url: './dist/manifest.json'
+        platform: 'android'
+        directory: './dist'
+        include-apk: 'true'
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: suhail-express-apk
+        path: |
+          *.apk
+          **/*.apk
+
